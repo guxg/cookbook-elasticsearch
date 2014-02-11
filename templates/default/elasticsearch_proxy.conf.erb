@@ -1,7 +1,28 @@
+<% if node.elasticsearch[:nginx][:redirect] %>
+server {
+  listen 80 default;
+  location / {
+    rewrite ^(.*) https://$host<%= node.elasticsearch[:nginx][:port] %>$1 permanent;
+  }
+}
+<% end %>
+
 server {
   listen   <%= node.elasticsearch[:nginx][:port] %>;
   server_name  elasticsearch;
   client_max_body_size <%= node.elasticsearch[:nginx][:client_max_body_size] %>;
+
+<% if node.elasticsearch[:nginx][:ssl] %>
+  # SSL Configuration
+  ssl on;
+  ssl_certificate /etc/nginx/ssl/server.crt;
+  ssl_certificate_key /etc/nginx/ssl/server.key;
+  ssl_session_timeout 5m;
+  ssl_protocols SSLv3 TLSv1;
+  ssl_ciphers HIGH:MEDIUM:!ADH;
+  ssl_prefer_server_ciphers on;
+  ssl_session_cache shared:SSL:10m;
+<% end %>
 
   error_log   <%= node.elasticsearch[:nginx][:log_dir] %>/elasticsearch-errors.log;
   access_log  <%= node.elasticsearch[:nginx][:log_dir] %>/elasticsearch.log;
