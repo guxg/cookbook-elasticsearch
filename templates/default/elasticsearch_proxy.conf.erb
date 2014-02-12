@@ -1,8 +1,8 @@
-<% if node.elasticsearch[:nginx][:redirect] %>
+<% if node.elasticsearch[:nginx][:ssl] and node.elasticsearch[:nginx][:redirect] %>
 server {
   listen 80 default;
   location / {
-    rewrite ^(.*) https://$host<%= node.elasticsearch[:nginx][:port] %>$1 permanent;
+    rewrite ^(.*) https://$host:<%= node.elasticsearch[:nginx][:port] %>$1 permanent;
   }
 }
 <% end %>
